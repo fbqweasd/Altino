@@ -71,6 +71,26 @@ int main(int argc, char *argv[]){
 			perror("write");
 			exit(0);
 	}
+	memset(&buffer, 0x00, sizeof(buffer));
+		
+	//로그인 결과 
+	if((n = read(server_fd, buffer, BUF_LEN)) < 0){
+		perror("read");
+		close(server_fd);
+		exit(0);
+	}
+	
+	puts(buffer);
+
+	if(strcmp(buffer,"sss") == 0 ){	
+		puts("로그인 성공");
+	}
+	else{
+		puts("연결 실패");
+		write(server_fd, "exit", 4);
+		close(server_fd);
+		exit(0);
+	}
 
 	// 프로세스 분기 
 	pid = fork();
@@ -121,6 +141,3 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
-void server_exit(char* meg){
-
-}

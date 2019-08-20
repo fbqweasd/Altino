@@ -17,6 +17,10 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in server_addr, client_addr;
 	int server_fd, client_fd;
 
+
+	char id[20];
+	char pw[20];
+
 	int len, msg_size;
 	char temp[20];
 	pid_t pid;
@@ -56,7 +60,6 @@ int main(int argc, char *argv[]){
 		exit(0);
 	}
 
-	memset(buffer, 0x00, sizeof(buffer));
 
 	pid = fork(); // 임시로 분기 해놓음 
 				  // 아직은 클라이언트가 2개 밖에 몬 붙음..
@@ -64,6 +67,7 @@ int main(int argc, char *argv[]){
 	while(1){
 		len = sizeof(client_addr);
 		client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &len);
+		memset(buffer, 0x00, sizeof(buffer));
 
 		if(client_fd < 0){
 			perror("accept");
@@ -74,12 +78,35 @@ int main(int argc, char *argv[]){
 		printf("Server : %s client connected. \n", temp);
 		
 		// login code
-		msg_size = read(client_fd, buffer, BUF_LEN);
-		buffer[msg_size] = NULL;
+		// id 
+		msg_size = read(client_fd, id, 20);
+		id[msg_size] = NULL;
+
+
+		//passwd 
+		msg_size = read(client_fd, pw, 20);
+		pw[msg_size] = NULL;
+		
+		if(strcmp(id,"UKC") != 0){
+			close(client_fd);
+			break;
+		}
+
+		if(strcmp(pw,"1234") != 0){
+			close(client_fd);
+			break;
+		}
+		write(client_fd, "sss", 3);
+
 
 		while(1){
 			msg_size = read(client_fd, buffer, BUF_LEN);
 			buffer[msg_size] = NULL;
+
+			if(msg_size == 0){
+				close(client_fd);
+				break;
+			}
 
 			if(errno == EAGAIN){
 				printf("data NULL");
