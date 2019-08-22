@@ -140,14 +140,18 @@ int main(int argc, char *argv[]){
 				exit(0);
 			}
 
+			// ---------- 명령어 처리 ------------ //
+
 			if(strcmp(buffer,"ndic") == 0){
 				free(dic_p);
 				dic_p = NULL;
+				continue;
 			}
 
 			if(strcmp(buffer,"nfil")== 0){
 				free(fil_p);
 				fil_p = NULL;
+				continue;
 			}
 
 			// 디렉토리, 파일 별로 데이터가 들어옴 이걸 molloc을 이용하여 동적으로 관리할 계획
@@ -242,6 +246,8 @@ int main(int argc, char *argv[]){
 			buffer[n] = '\0';
 			puts(buffer);
 		}
+		
+		// ----------- 명령어 끝 ---------------- //
 	}
 		
 
