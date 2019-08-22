@@ -167,12 +167,13 @@ int main(int argc, char *argv[]){
 					
 					write(client_fd, "nfil",4);
 				}
-
-				pclose(fp);
-				buffer[readS] = 0;
+				else{
+					pclose(fp);
+					buffer[readS] = 0;
 				
-				write(client_fd, "fil",3);
-				write(client_fd, buffer,readS);
+					write(client_fd, "fil",3);
+					write(client_fd, buffer,readS);
+				}
 				write(client_fd, "lsfin",5);
 			}
 			
