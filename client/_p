@@ -140,18 +140,10 @@ int main(int argc, char *argv[]){
 				exit(0);
 			}
 
-			if(strcmp(buffer,"ndic") == 0){
-				free(dic_p);
-				dic_p = NULL;
-			}
-
-			if(strcmp(buffer,"nfil")== 0){
-				free(fil_p);
-				fil_p = NULL;
-			}
 
 			// 디렉토리, 파일 별로 데이터가 들어옴 이걸 molloc을 이용하여 동적으로 관리할 계획
-			if(strcmp(buffer,"dic") == 0){
+			if(strcmp(buffer,"dic")){
+
 				free(dic_p);
 				dic_p = NULL;
 
@@ -166,31 +158,26 @@ int main(int argc, char *argv[]){
 					exit(0);
 				}
 
+				ptr = strchr(buffer,'\n');
 				cont = 0;
 				ptr_p = buffer;
+				momcpy(input_data,ptr_p,ptr - ptr_p);
+				printf(input_data);
 
 				while(ptr != NULL){
-					ptr = strchr(ptr + 1, '\n');
+					ptr = strchar(ptr + 1, '\n');
+
 					cont++;
 				}
 
 				// 데이터 저장
-				dic_p = (char **)malloc(sizeof(char) * cont + 1);
-				cont = 0;
-
-				while(ptr != NULL){
-					ptr = strchr(ptr + 1, '\n');
-					dic_p[cont] = (char*)malloc(sizeof(char) *20);
-					memcpy(dic_p[cont],ptr_p,ptr - ptr_p - 1);
-					ptr_p = ptr + 1;
-					cont++;
-				}
-				continue;
+				//dic_p = (char **)malloc(sizeof(char) * cont);
 			}
 
-			if(strcmp(buffer,"fil") == 0){				
+			if(strcmp(buffer,"fil")){
+				
 				free(fil_p);
-				fil_p = NULL;
+				fli_p = NULL;
 				
 				if((n = read(server_fd, buffer, BUF_LEN)) < 0){
 					perror("read");
@@ -203,40 +190,13 @@ int main(int argc, char *argv[]){
 					exit(0);
 				}
 
+				cont_p = strchr(buffer,'\n');
 				cont = 0;
-				
-				while(ptr != NULL){
-					ptr = strchr(ptr + 1, '\n');
+
+				while(cont_p != NULL){
+					ptr = strchar(ptr + 1, '\n');
 					cont++;
 				}
-
-				// 데이터 저장
-				fil_p = (char **)malloc(sizeof(char) * cont + 1);
-				cont = 0;
-				ptr_p = buffer;
-
-				while(ptr != NULL){
-					ptr = strchr(ptr + 1, '\n');
-					fil_p[cont] = (char*)malloc(sizeof(char) *20);
-					memcpy(fil_p[cont],ptr_p,ptr - ptr_p - 1);
-					ptr_p = ptr + 1;
-					cont++;
-				}
-				continue;
-			}
-
-			if(strcmp(buffer,"lsfin") == 0){
-				int dic_s = sizeof(dic_p);
-				int fil_s = sizeof(fil_p);
-
-				for(int i = 0; i < dic_s; i++){
-					puts(dic_p[i]);
-				}
-
-				for(int i =0; i < fil_s; i++){
-					puts(fil_p[i]);
-				}
-				continue;
 			}
 
 			buffer[n] = '\0';

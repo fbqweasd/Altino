@@ -1,3 +1,8 @@
+/*
+	문제점 멀티 접속 문제 (최대 2개)
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -9,7 +14,7 @@
 #include <unistd.h>
 
 
-#define BUF_LEN 128
+#define BUF_LEN 1024
 #define PORT 9800
 
 int main(int argc, char *argv[]){
@@ -88,13 +93,15 @@ int main(int argc, char *argv[]){
 		pw[msg_size] = NULL;
 		
 		if(strcmp(id,"UKC") != 0){
+			printf("Server : %s client closed. \n", temp);	
 			close(client_fd);
-			break;
+			continue;
 		}
 
 		if(strcmp(pw,"1234") != 0){
 			close(client_fd);
-			break;
+			printf("Server : %s client closed. \n", temp);	
+			continue;
 		}
 		write(client_fd, "sss", 3);
 
@@ -115,13 +122,66 @@ int main(int argc, char *argv[]){
 				perror("read");	
 			}
 			printf("%s : %s \n",temp, buffer);	
-			
-			if(strcmp(buffer,"exit") == 0){
-				break;
+
+			// 명령어 입력~
+			if(strcmp(buffer,"ls") == 0){ // ls 명령어
+				FILE *fp = NULL;
+				size_t readS = 0;
+				
+				fp = popen("ls -d data/*/","r");
+				if(!fp){
+					perror("file");
+					break;
+				}
+
+				readS = fread((void *)buffer, sizeof(char), BUF_LEN - 1,fp);
+
+				if(readS == 0){
+					/*
+					pclose(fp);
+					printf("error");
+					break;
+					*/
+					write(client_fd, "ndic",4);
+				}else{
+					pclose(fp);
+					buffer[readS] = 0;
+						
+					write(client_fd, "dic",3);
+					write(client_fd, buffer,readS);
+				}
+	
+				fp = popen("ls data/ -p | grep -v '/$' ","r");
+				if(!fp){
+					perror("file");
+					break;
+				}
+				
+				readS = fread((void *)buffer, sizeof(char), BUF_LEN - 1,fp);
+
+				if(readS == 0){
+					/*
+					pclose(fp);
+					printf("error");
+					*/
+					
+					write(client_fd, "nfil",4);
+				}
+
+				pclose(fp);
+				buffer[readS] = 0;
+				
+				write(client_fd, "fil",3);
+				write(client_fd, buffer,readS);
+				write(client_fd, "lsfin",5);
 			}
 			
-			write(client_fd, buffer, msg_size);
+			if(strcmp(buffer,"exit") == 0){ //exit 명령어
+				break;
+			}	
 		}
+
+
 		write(client_fd, "bye",3);
 
 		close(client_fd);
