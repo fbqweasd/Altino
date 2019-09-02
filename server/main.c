@@ -128,7 +128,7 @@ int main(int argc, char *argv[]){
 				FILE *fp = NULL;
 				size_t readS = 0;
 				
-				fp = popen("ls -d data/*/","r");
+				fp = popen("ls data/*/ -d","r");
 				if(!fp){
 					perror("file");
 					break;
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]){
 					write(client_fd, "fil",3);
 					write(client_fd, buffer,readS);
 				}
-				//write(client_fd, "lsfin",5);
+				write(client_fd, "lsfin",5);
 			}
 			
 			if(strcmp(buffer,"exit") == 0){ //exit 명령어

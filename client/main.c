@@ -128,7 +128,7 @@ int main(int argc, char *argv[]){
 	else{ // 부모 프로세스
 			
 		while(1){
-
+			memset(&buffer, 0x00, sizeof(buffer));
 			if((n = read(server_fd, buffer, BUF_LEN)) < 0){
 				perror("read");
 				exit(0);
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]){
 					exit(0);
 				}
 				else if(n == 0){
-					puts("--- 서버 연결 종료 ---");
+					puts("--- 서버 연결 종료(ERROR 1) ---");
 					close(server_fd);
 					kill(pid,SIGKILL);
 					exit(0);
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]){
 				while(ptr != NULL){
 					ptr = strchr(ptr + 1, '\n');
 					dic_p[cont] = (char*)malloc(sizeof(char) *20);
-					memcpy(dic_p[cont],ptr_p,ptr - ptr_p - 1);
+					memcpy(dic_p[cont],ptr_p,ptr - ptr_p);
 					ptr_p = ptr + 1;
 					cont++;
 				}
@@ -230,6 +230,7 @@ int main(int argc, char *argv[]){
 			}
 
 			if(strcmp(buffer,"lsfin") == 0){
+				puts("(lsfin input)");
 				int dic_s = sizeof(dic_p);
 				int fil_s = sizeof(fil_p);
 
